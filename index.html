@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <h1>oracel simple code</h1>
+    <pre>-- Create Table
+        CREATE TABLE users (
+            id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+            name VARCHAR2(50),
+            email VARCHAR2(50)
+        );
+        
+        -- Create (Insert)
+        BEGIN
+            INSERT INTO users (name, email) VALUES ('Jaymin', 'jaymin@example.com');
+            COMMIT;
+        END;
+        /
+        
+        -- Read (Select)
+        DECLARE
+            v_name users.name%TYPE;
+            v_email users.email%TYPE;
+        BEGIN
+            SELECT name, email INTO v_name, v_email FROM users WHERE id = 1;
+            DBMS_OUTPUT.PUT_LINE('Name: ' || v_name || ', Email: ' || v_email);
+        END;
+        /
+        
+        -- Update
+        BEGIN
+            UPDATE users SET email = 'newemail@example.com' WHERE id = 1;
+            COMMIT;
+        END;
+        /
+        
+        -- Delete
+        BEGIN
+            DELETE FROM users WHERE id = 1;
+            COMMIT;
+        END;
+        /</pre>
+
+    
+
+    <h1>java</h1>
+    
+    <pre>import java.util.Scanner;
+
+        interface FindResult {
+            void calculatePercentage();
+            void displayResult();
+        }
+        
+        class Student {
+            int rollNo;
+            String name;
+            Student(int rollNo, String name) {
+                this.rollNo = rollNo;
+                this.name = name;
+            }
+        }
+        
+        class Marks extends Student implements FindResult {
+            int m1, m2, m3;
+            float percentage;
+            String result;
+        
+            Marks(int rollNo, String name, int m1, int m2, int m3) {
+                super(rollNo, name);
+                this.m1 = m1;
+                this.m2 = m2;
+                this.m3 = m3;
+            }
+        
+            public void calculatePercentage() {
+                int total = m1 + m2 + m3;
+                percentage = total / 3.0f;
+        
+                if (m1 < 35 || m2 < 35 || m3 < 35) {
+                    result = "Fail";
+                } else if (percentage >= 70) {
+                    result = "Distinction";
+                } else if (percentage >= 60) {
+                    result = "First Class";
+                } else if (percentage >= 50) {
+                    result = "Second Class";
+                } else if (percentage >= 40) {
+                    result = "Pass Class";
+                } else {
+                    result = "Fail";
+                }
+            }
+        
+            public void displayResult() {
+                System.out.println("Roll No: " + rollNo);
+                System.out.println("Name: " + name);
+                System.out.println("Marks: " + m1 + ", " + m2 + ", " + m3);
+                System.out.println("Percentage: " + percentage + "%");
+                System.out.println("Result: " + result);
+            }
+        
+            public static void main(String[] args) {
+                Scanner sc = new Scanner(System.in);
+        
+                System.out.print("Enter Roll No: ");
+                int roll = sc.nextInt();
+                sc.nextLine();
+                System.out.print("Enter Name: ");
+                String name = sc.nextLine();
+                System.out.print("Enter Marks of 3 Subjects: ");
+                int m1 = sc.nextInt();
+                int m2 = sc.nextInt();
+                int m3 = sc.nextInt();
+        
+                Marks student = new Marks(roll, name, m1, m2, m3);
+                student.calculatePercentage();
+                student.displayResult();
+            }
+        }
+        </pre>
+
+        <h1>oracle</h1>
+
+        <pre>
+            -- Create student table
+CREATE TABLE student (
+    rollno NUMBER(3) PRIMARY KEY,
+    name VARCHAR2(30),
+    city VARCHAR2(20)
+);
+
+-- Create fees table
+CREATE TABLE fees (
+    rollno NUMBER(3),
+    month NUMBER(2),
+    fees NUMBER(7,2),
+    PRIMARY KEY (rollno, month)
+);
+
+-- Insert sample data
+INSERT INTO student VALUES (100, 'JATIN', 'Bhavnagar');
+INSERT INTO student VALUES (200, 'PRATIK', 'Surat');
+INSERT INTO student VALUES (300, 'DIPAK', 'Rajkot');
+INSERT INTO student VALUES (400, 'JAYESH', 'Ahmedabad');
+
+INSERT INTO fees VALUES (100, 1, 5000);
+INSERT INTO fees VALUES (200, 1, 2000);
+INSERT INTO fees VALUES (300, 2, 0); -- No payment in month 1
+INSERT INTO fees VALUES (400, 1, 4000);
+
+-- Create procedure to display student fee status by month
+CREATE OR REPLACE PROCEDURE get_student_fees(p_month NUMBER) IS
+BEGIN
+    -- Students who paid fees
+    DBMS_OUTPUT.PUT_LINE('--- Students who paid fees ---');
+    FOR rec IN (
+        SELECT s.rollno, s.name, f.fees
+        FROM student s
+        JOIN fees f ON s.rollno = f.rollno
+        WHERE f.month = p_month
+    ) LOOP
+        DBMS_OUTPUT.PUT_LINE('Roll No: ' || rec.rollno || ', Name: ' || rec.name || ', Fees: ' || rec.fees);
+    END LOOP;
+
+    -- Students who did not pay fees
+    DBMS_OUTPUT.PUT_LINE('--- Students who have not paid fees ---');
+    FOR rec IN (
+        SELECT s.rollno, s.name
+        FROM student s
+        WHERE s.rollno NOT IN (
+            SELECT rollno FROM fees WHERE month = p_month
+        )
+    ) LOOP
+        DBMS_OUTPUT.PUT_LINE('Roll No: ' || rec.rollno || ', Name: ' || rec.name);
+    END LOOP;
+END;
+/
+
+-- Run procedure
+BEGIN
+    get_student_fees(1); -- Change month as needed
+END;
+/
+        </pre>
+<h1>------------------------------------------------------------------------------------------------------------------------</h1>
+        <pre>
+            class MultiplicationThread extends Thread {
+                private int number;
+            
+                public MultiplicationThread(int number) {
+                    this.number = number;
+                }
+            
+                @Override
+                public synchronized void run() {
+                    System.out.println("Multiplication Table of " + number);
+                    for (int i = 1; i <= 10; i++) {
+                        System.out.println(number + " x " + i + " = " + (number * i));
+                        try {
+                            Thread.sleep(100); // Just to simulate some delay
+                        } catch (InterruptedException e) {
+                            System.out.println(e);
+                        }
+                    }
+                    System.out.println();
+                }
+            }
+            
+            public class MultiplicationTable {
+                public static void main(String[] args) {
+                    MultiplicationThread t1 = new MultiplicationThread(5);
+                    MultiplicationThread t2 = new MultiplicationThread(7);
+            
+                    t1.start();
+                    t2.start();
+                }
+            }
+            
+        </pre>
+
+        <h1>----------------------------------------------------------------------------------</h1>
+
+        <pre>
+            -- Create Department table
+CREATE TABLE Department (
+    Dept NUMBER(2) PRIMARY KEY,
+    Dept_name VARCHAR2(20),
+    Dept_count NUMBER(3)
+);
+
+-- Create Employee table
+CREATE TABLE Employee (
+    Emp_no NUMBER(4) PRIMARY KEY,
+    Emp_name VARCHAR2(25) NOT NULL,
+    Basic NUMBER(7,2),
+    Dept NUMBER(2),
+    FOREIGN KEY (Dept) REFERENCES Department(Dept)
+);
+
+-- Trigger: Increment Dept_count on Employee INSERT
+CREATE OR REPLACE TRIGGER trg_emp_insert
+AFTER INSERT ON Employee
+FOR EACH ROW
+BEGIN
+    UPDATE Department
+    SET Dept_count = NVL(Dept_count, 0) + 1
+    WHERE Dept = :NEW.Dept;
+END;
+/
+
+-- Trigger: Adjust Dept_count on Employee UPDATE (when department is changed)
+CREATE OR REPLACE TRIGGER trg_emp_update
+AFTER UPDATE OF Dept ON Employee
+FOR EACH ROW
+BEGIN
+    -- Decrement count in old department
+    UPDATE Department
+    SET Dept_count = Dept_count - 1
+    WHERE Dept = :OLD.Dept;
+
+    -- Increment count in new department
+    UPDATE Department
+    SET Dept_count = Dept_count + 1
+    WHERE Dept = :NEW.Dept;
+END;
+/
+
+-- Trigger: Decrement Dept_count on Employee DELETE
+CREATE OR REPLACE TRIGGER trg_emp_delete
+AFTER DELETE ON Employee
+FOR EACH ROW
+BEGIN
+    UPDATE Department
+    SET Dept_count = Dept_count - 1
+    WHERE Dept = :OLD.Dept;
+END;
+/
+
+        </pre>
+
+        <h1>--------------------------------------------------------------------------------------------</h1>
+
+        <pre>package shape;
+
+            interface Shape {
+                void area();
+                void perimeter();
+            }
+            
+            class Circle implements Shape {
+                double radius;
+            
+                Circle(double r) {
+                    radius = r;
+                }
+            
+                public void area() {
+                    System.out.println("Circle Area: " + (Math.PI * radius * radius));
+                }
+            
+                public void perimeter() {
+                    System.out.println("Circle Perimeter: " + (2 * Math.PI * radius));
+                }
+            }
+            
+            class Rectangle implements Shape {
+                double length, breadth;
+            
+                Rectangle(double l, double b) {
+                    length = l;
+                    breadth = b;
+                }
+            
+                public void area() {
+                    System.out.println("Rectangle Area: " + (length * breadth));
+                }
+            
+                public void perimeter() {
+                    System.out.println("Rectangle Perimeter: " + (2 * (length + breadth)));
+                }
+            }
+            
+            class Triangle implements Shape {
+                double a, b, c;
+            
+                Triangle(double x, double y, double z) {
+                    a = x; b = y; c = z;
+                }
+            
+                public void area() {
+                    double s = (a + b + c) / 2;
+                    double area = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+                    System.out.println("Triangle Area: " + area);
+                }
+            
+                public void perimeter() {
+                    System.out.println("Triangle Perimeter: " + (a + b + c));
+                }
+            }
+            
+            class Cylinder implements Shape {
+                double radius, height;
+            
+                Cylinder(double r, double h) {
+                    radius = r;
+                    height = h;
+                }
+            
+                public void area() {
+                    double area = 2 * Math.PI * radius * (height + radius);
+                    System.out.println("Cylinder Surface Area: " + area);
+                }
+            
+                public void perimeter() {
+                    System.out.println("Cylinder Circumference (Base): " + (2 * Math.PI * radius));
+                }
+            }
+            
+            public class ShapeTest {
+                public static void main(String[] args) {
+                    Shape circle = new Circle(5);
+                    circle.area();
+                    circle.perimeter();
+            
+                    Shape rectangle = new Rectangle(10, 5);
+                    rectangle.area();
+                    rectangle.perimeter();
+            
+                    Shape triangle = new Triangle(3, 4, 5);
+                    triangle.area();
+                    triangle.perimeter();
+            
+                    Shape cylinder = new Cylinder(3, 7);
+                    cylinder.area();
+                    cylinder.perimeter();
+                }
+            }
+            </pre>
+
+            <h1>-----------------------------------------------------------------------------------</h1>
+
+            <pre>
+                -- Create ACC_MASTER table
+CREATE TABLE ACC_MASTER (
+    Acc_no NUMBER PRIMARY KEY,
+    Balance NUMBER
+);
+
+-- Insert initial data
+INSERT INTO ACC_MASTER VALUES (100, 2500);
+INSERT INTO ACC_MASTER VALUES (101, 2500);
+INSERT INTO ACC_MASTER VALUES (102, 2500);
+INSERT INTO ACC_MASTER VALUES (103, 2500);
+
+-- Create ACC_TRAN table
+CREATE TABLE ACC_TRAN (
+    Acc_no NUMBER,
+    Tran_type CHAR(1), -- W or D
+    Tran_date DATE DEFAULT SYSDATE,
+    Amount NUMBER(8,2),
+    Status CHAR(1) -- T (True/Processed), F (False/Pending)
+);
+
+-- Trigger to handle transaction rules
+CREATE OR REPLACE TRIGGER trg_acc_transaction
+BEFORE INSERT ON ACC_TRAN
+FOR EACH ROW
+DECLARE
+    v_balance ACC_MASTER.Balance%TYPE;
+BEGIN
+    -- Get current balance
+    SELECT Balance INTO v_balance FROM ACC_MASTER WHERE Acc_no = :NEW.Acc_no;
+
+    IF :NEW.Tran_type = 'W' THEN
+        IF (v_balance - :NEW.Amount) < 1500 THEN
+            -- Not enough balance: mark pending
+            :NEW.Status := 'F';
+        ELSE
+            -- Sufficient balance: process transaction
+            UPDATE ACC_MASTER SET Balance = Balance - :NEW.Amount
+            WHERE Acc_no = :NEW.Acc_no;
+            :NEW.Status := 'T';
+        END IF;
+    ELSIF :NEW.Tran_type = 'D' THEN
+        -- Deposit: always update
+        UPDATE ACC_MASTER SET Balance = Balance + :NEW.Amount
+        WHERE Acc_no = :NEW.Acc_no;
+        :NEW.Status := 'T';
+    END IF;
+END;
+/
+
+            </pre>
+
+
+            <h1>--------------------------------------------------------------------------------</h1>
+
+            <pre>
+                // StringInterface.java
+interface string_intf {
+    String string_reverse(String s);
+    int string_len(String s);
+}
+
+// StringClass.java
+class string_class implements string_intf {
+
+    public String string_reverse(String s) {
+        char[] chars = s.toCharArray();
+        String rev = "";
+        for (int i = chars.length - 1; i >= 0; i--) {
+            rev += chars[i];
+        }
+        return rev;
+    }
+
+    public int string_len(String s) {
+        int count = 0;
+        for (char c : s.toCharArray()) {
+            count++;
+        }
+        return count;
+    }
+
+    public static void main(String[] args) {
+        string_class obj = new string_class();
+        String input = "Bhavnagar";
+
+        System.out.println("Original: " + input);
+        System.out.println("Reversed: " + obj.string_reverse(input));
+        System.out.println("Length: " + obj.string_len(input));
+    }
+}
+
+            </pre>
+<h1>------------------------------------------------------------------------------</h1>
+<pre>
+    -- Sales_Master Table
+CREATE TABLE Sales_Master (
+    Sales_no NUMBER PRIMARY KEY,
+    Sales_name VARCHAR2(20),
+    Comm_rate NUMBER(4,1)
+);
+
+-- Sales_Detail Table
+CREATE TABLE Sales_Detail (
+    Sales_no NUMBER REFERENCES Sales_Master(Sales_no),
+    City VARCHAR2(20),
+    Amount NUMBER
+);
+
+
+-- Sales_Master Data
+INSERT INTO Sales_Master VALUES (1, 'Ram', 7.5);
+INSERT INTO Sales_Master VALUES (2, 'Laxman', 8.0);
+INSERT INTO Sales_Master VALUES (3, 'Sita', 9.0);
+INSERT INTO Sales_Master VALUES (4, 'Bharat', 7.0);
+
+-- Sales_Detail Data
+INSERT INTO Sales_Detail VALUES (1, 'Bhavnagar', 6000);
+INSERT INTO Sales_Detail VALUES (2, 'Junagadh', 7000);
+INSERT INTO Sales_Detail VALUES (2, 'Bhavnagar', 4000);
+INSERT INTO Sales_Detail VALUES (3, 'Morbi', 7500);
+INSERT INTO Sales_Detail VALUES (3, 'Rajkot', 6550);
+INSERT INTO Sales_Detail VALUES (4, 'Surat', 12000);
+INSERT INTO Sales_Detail VALUES (4, 'Bhavnagar', 9000);
+
+CREATE OR REPLACE FUNCTION total_sales(sno NUMBER)
+RETURN NUMBER IS
+    total NUMBER := 0;
+BEGIN
+    SELECT SUM(Amount)
+    INTO total
+    FROM Sales_Detail
+    WHERE Sales_no = sno;
+
+    RETURN NVL(total, 0);
+END;
+/
+SET SERVEROUTPUT ON;
+
+DECLARE
+    v_name Sales_Master.Sales_name%TYPE;
+    v_comm Sales_Master.Comm_rate%TYPE;
+    v_sales NUMBER;
+    v_total_comm NUMBER;
+BEGIN
+    FOR rec IN (SELECT * FROM Sales_Master) LOOP
+        v_sales := total_sales(rec.Sales_no);
+        v_total_comm := (v_sales * rec.Comm_rate) / 100;
+
+        DBMS_OUTPUT.PUT_LINE('Salesman: ' || rec.Sales_name);
+        DBMS_OUTPUT.PUT_LINE('Total Sales: ' || v_sales);
+        DBMS_OUTPUT.PUT_LINE('Total Commission: ' || v_total_comm);
+        DBMS_OUTPUT.PUT_LINE('-----------------------------');
+    END LOOP;
+END;
+/
+
+</pre>
+
+<h1>----------------------------------------------------------------------------</h1>
+
+
+<pre>
+    // MultiThreadingDemo.java
+class OddSumThread extends Thread {
+    int n;
+    OddSumThread(int n) { this.n = n; }
+
+    public void run() {
+        int sum = 0;
+        for (int i = 1; i <= n; i += 2) sum += i;
+        System.out.println("Sum of odd numbers: " + sum);
+    }
+}
+
+class EvenSumThread extends Thread {
+    int n;
+    EvenSumThread(int n) { this.n = n; }
+
+    public void run() {
+        int sum = 0;
+        for (int i = 2; i <= n; i += 2) sum += i;
+        System.out.println("Sum of even numbers: " + sum);
+    }
+}
+
+class FactorialThread extends Thread {
+    int n;
+    FactorialThread(int n) { this.n = n; }
+
+    public void run() {
+        long fact = 1;
+        for (int i = 1; i <= n; i++) fact *= i;
+        System.out.println("Factorial: " + fact);
+    }
+}
+
+public class MultiThreadingDemo {
+    public static void main(String[] args) {
+        int n = 10;
+
+        OddSumThread t1 = new OddSumThread(n);
+        EvenSumThread t2 = new EvenSumThread(n);
+        FactorialThread t3 = new FactorialThread(n);
+
+        t1.setPriority(3);
+        t2.setPriority(6);
+        t3.setPriority(9);
+
+        t1.start();
+        t2.start();
+        t3.start();
+    }
+}
+
+</pre>
+
+<h1>----------------------------------------------------------------------------------------</h1>
+
+<pre>
+    -- College Table
+CREATE TABLE College (
+    Col_code NUMBER(1) PRIMARY KEY,
+    Col_name VARCHAR2(20)
+);
+
+-- Student Table
+CREATE TABLE Student (
+    Col_code NUMBER(1),
+    Seat_no NUMBER(5),
+    Stud_name VARCHAR2(20),
+    Total_mark NUMBER(3),
+    CONSTRAINT fk_col FOREIGN KEY (Col_code) REFERENCES College(Col_code)
+);
+-- Colleges
+INSERT INTO College VALUES (1, 'ABC');
+INSERT INTO College VALUES (2, 'XYZ');
+INSERT INTO College VALUES (3, 'LMN');
+
+-- Students
+INSERT INTO Student VALUES (1, 1, 'ANIL', 245);
+INSERT INTO Student VALUES (1, 2, 'JATIN', 235);
+INSERT INTO Student VALUES (1, 3, 'FENIL', 228);
+INSERT INTO Student VALUES (2, 1, 'RAHUL', 240);
+INSERT INTO Student VALUES (2, 2, 'TUSHAR', 222);
+INSERT INTO Student VALUES (2, 3, 'KIRTI', 230);
+INSERT INTO Student VALUES (3, 1, 'HEMAL', 248);
+INSERT INTO Student VALUES (3, 2, 'NEHA', 210);
+INSERT INTO Student VALUES (3, 3, 'KUNAL', 205);
+INSERT INTO Student VALUES (3, 4, 'NISHA', 237);
+-- User-defined exception and procedure
+DECLARE
+    no_data_found EXCEPTION;
+    PRAGMA EXCEPTION_INIT(no_data_found, -1403);
+BEGIN
+    NULL;
+END;
+/
+
+-- Procedure to display student info by college code
+CREATE OR REPLACE PROCEDURE show_students_by_college(p_col_code NUMBER) IS
+    v_col_name College.Col_name%TYPE;
+BEGIN
+    SELECT Col_name INTO v_col_name FROM College WHERE Col_code = p_col_code;
+
+    DBMS_OUTPUT.PUT_LINE('College: ' || v_col_name);
+    DBMS_OUTPUT.PUT_LINE('Seat No | Name | Total Marks');
+    DBMS_OUTPUT.PUT_LINE('------------------------------');
+
+    FOR rec IN (
+        SELECT Seat_no, Stud_name, Total_mark
+        FROM Student
+        WHERE Col_code = p_col_code
+    ) LOOP
+        DBMS_OUTPUT.PUT_LINE(rec.Seat_no || ' | ' || rec.Stud_name || ' | ' || rec.Total_mark);
+    END LOOP;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('No data found for college code ' || p_col_code);
+END;
+/
+
+-- Example: Display students of College ABC (code = 1)
+BEGIN
+    show_students_by_college(1);
+END;
+/
+
+</pre>
+
+
+
+
+
+</body>
+</html>
